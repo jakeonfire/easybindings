@@ -1,0 +1,3 @@
+[submodule "easyKVO"]
+	path = easyKVO
+	url = https://github.com/saldavonschwartz/easyKVO.git
