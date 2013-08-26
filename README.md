@@ -15,6 +15,7 @@ Installation
 ============
 
 easykVO is included as a submodule. Make sure to update it via: git submodule update
+or if you add easybindings as a submodule to your own project and want to update easyKVO as well: git submodule update --init --recursive
 
 Usage
 =====
