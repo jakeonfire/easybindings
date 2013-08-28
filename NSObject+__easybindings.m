@@ -37,13 +37,9 @@ static IMP _originalUnbind;
         if (transformer) {
             newValue = [transformer transformedValue:newValue];
         }
-         NSLog(@"-- %@.%@ newValue: %@", _observer, binding, newValue);
         [_observer setValue:newValue forKey:binding];
     };
     callback(observable);
-    NSLog(@"set binding ==================================");
-    NSLog(@"binding: %@", binding);
-    NSLog(@"binding.hash: %u", binding.hash);
     [observable addObserver:self forKeyPath:keyPath options:0 context:(void *)binding.hash observerCallback:callback];
 }
 
@@ -60,11 +56,8 @@ static IMP _originalUnbind;
 #endif
     KVOProxy *kvoProxy = self.kvoProxy;
     if (kvoProxy) {
-        NSLog(@"remove binding ==================================");
         NSSet *allContexts = [NSSet setWithArray:kvoProxy.contexts];
         for (KVOContext *aContext in allContexts) {
-            NSLog(@"binding: %@", binding);
-            NSLog(@"binding.hash: %u", binding.hash);
             if (aContext.observer == self && aContext.context == (void *)binding.hash) {
                 [aContext.observee removeObserver:self forKeyPath:aContext.keyPath context:aContext.context];
                 break;
