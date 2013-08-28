@@ -320,7 +320,7 @@ static NSString *CallbackEncodingObserver;
 
 - (void)__EASY_KVO__removeObserver:(NSObject *)observer forKeyPath:(NSString *)keyPath
 {
-    if (self.removeWithContextInProgress) {
+    if ([observer isKindOfClass:KVOProxy.class]) {
         observer = ((KVOProxy*)observer).delegate;
     }
 
@@ -383,6 +383,9 @@ static NSString *CallbackEncodingObserver;
 - (void)addObserver:(NSObject *)observer forKeyPath:(NSString *)keyPath options:(NSKeyValueObservingOptions)options context:(void *)context genericCallback:(id)genericCallback
 {
     ((void(*)(id, SEL, NSObject *, NSString *, NSKeyValueObservingOptions, void *))_originalAddObserver)(self, @selector(addObserver:forKeyPath:options:context:), observer.kvoProxy, keyPath, options, context);
+    if ([[NSStringFromClass(self.class) substringToIndex:2] isEqualToString:@"TF"]) {
+        return;
+    }
     KVOContext *newContext = [[KVOContext alloc] initWithObservee:self observer:observer keyPath:keyPath context:context callback:genericCallback];
     [newContext.observee.kvoProxy._mutableContexts addObject:newContext];
     [newContext.observer.kvoProxy._mutableContexts addObject:newContext];
@@ -391,17 +394,17 @@ static NSString *CallbackEncodingObserver;
 
 - (void)__EASY_KVO__dealloc
 {
-    id removeInProgressWithContextProperty = objc_getAssociatedObject(self, RemoveInProgressWithContextKey);
-    if (removeInProgressWithContextProperty) {
-        objc_setAssociatedObject(self, RemoveInProgressWithContextKey, nil, OBJC_ASSOCIATION_RETAIN);
-        __RELEASE_IF_NO_ARC(removeInProgressWithContextProperty);
-    }
-    
     KVOProxy *kvoProxy = objc_getAssociatedObject(self, KVOProxyKey);
     if (kvoProxy) {
         [kvoProxy unbindAllContexts];
         objc_setAssociatedObject(self, KVOProxyKey, nil, OBJC_ASSOCIATION_RETAIN);
         __RELEASE_IF_NO_ARC(kvoProxy);
+    }
+
+    id removeInProgressWithContextProperty = objc_getAssociatedObject(self, RemoveInProgressWithContextKey);
+    if (removeInProgressWithContextProperty) {
+        objc_setAssociatedObject(self, RemoveInProgressWithContextKey, nil, OBJC_ASSOCIATION_RETAIN);
+        __RELEASE_IF_NO_ARC(removeInProgressWithContextProperty);
     }
 
     ((void(*)(id, SEL))_originalDealloc)(self, NSSelectorFromString(@"dealloc"));
