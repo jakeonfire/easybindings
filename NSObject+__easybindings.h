@@ -10,12 +10,10 @@
 
 @interface NSObject (__easybindings)
 
-// Similar to -bind:toObject:withKeyPath:options: in Cocoa's NSKeyValueBindingCreaton protocol, but the binding is automatically removed when the observer or observable go out of scope, and they work in Cocoa Touch
+// Similar to -bind:toObject:withKeyPath:options: in Cocoa's NSKeyValueBindingCreaton protocol
 - (void)bind:(NSString *)binding toObject:(id)observable withKeyPath:(NSString *)keyPath;
 - (void)bind:(NSString *)binding toObject:(id)observable withKeyPath:(NSString *)keyPath valueTransformer:(NSValueTransformer *)transformer;
-
-#if TARGET_OS_IPHONE
 - (void)unbind:(NSString *)binding;
-#endif
+- (NSString *)infoForBinding:(NSString *)binding;
 
 @end
